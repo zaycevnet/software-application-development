@@ -1,0 +1,12 @@
+# Bandit configuration file
+# Исключаем папки, которые не нужно сканировать
+exclude:
+  - venv          # виртуальное окружение
+  - .git          # git метаданные
+  - __pycache__   # кеш Python
+  - .github       # папка с workflow
+  - tests         # папка с тестами
+
+# Пропускаем конкретные правила
+skips:
+  - B101          # assert used, игнорируем в тестах

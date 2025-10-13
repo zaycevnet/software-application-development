@@ -1,0 +1,65 @@
+name: CI/CD Pipeline - LW3
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Клонируем репозиторий
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # 2. Настройка Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    # 3. Установка зависимостей
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest flake8 coverage bandit requests
+
+    # 4. Запуск тестов
+    - name: Run tests
+      run: |
+        export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/LW3_Continuous_Integration_(CI)_GitHub_Actions
+        python -m pytest LW3_Continuous_Integration_(CI)_GitHub_Actions/tests
+
+    # 5. Линтинг кода
+    - name: Lint code
+      run: flake8 LW3_Continuous_Integration_(CI)_GitHub_Actions
+
+    # 6. Проверка покрытия тестами (ИСПРАВЛЕНИЕ ПУТИ И ИСТОЧНИКА)
+    - name: Test coverage
+      run: |
+        export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/LW3_Continuous_Integration_(CI)_GitHub_Actions
+        # --source указывает, что нужно проверять покрытие только в папке src
+        coverage run --source=LW3_Continuous_Integration_(CI)_GitHub_Actions/src -m pytest LW3_Continuous_Integration_(CI)_GitHub_Actions/tests
+        coverage report -m
+
+    # 7. Проверка безопасности кода (ИСПРАВЛЕНИЕ ПУТИ)
+    - name: Security check
+      run: bandit -r LW3_Continuous_Integration_(CI)_GitHub_Actions/src -c .bandit
+
+    # 8. Отправка уведомления в Telegram
+    - name: Notify via Telegram
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          export PIPELINE_STATUS="success"
+        else
+          export PIPELINE_STATUS="failure"
+        fi
+        python .github/workflows/telegram_notify.py
+      env:
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

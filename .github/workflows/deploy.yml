@@ -31,24 +31,25 @@ jobs:
     # 4. Запуск тестов
     - name: Run tests
       run: |
-        export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/LW3_Continuous_Integration_(CI)_GitHub_Actions
-        python -m pytest LW3_Continuous_Integration_(CI)_GitHub_Actions/tests
+        export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/"LW3_Continuous_Integration_(CI)_GitHub_Actions"
+        python -m pytest "LW3_Continuous_Integration_(CI)_GitHub_Actions"/tests
 
     # 5. Линтинг кода
     - name: Lint code
-      run: flake8 LW3_Continuous_Integration_(CI)_GitHub_Actions
+      run: flake8 "LW3_Continuous_Integration_(CI)_GitHub_Actions"
 
     # 6. Проверка покрытия тестами (ИСПРАВЛЕНИЕ ПУТИ И ИСТОЧНИКА)
     - name: Test coverage
       run: |
-        export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/LW3_Continuous_Integration_(CI)_GitHub_Actions
-        # --source указывает, что нужно проверять покрытие только в папке src
-        coverage run --source=LW3_Continuous_Integration_(CI)_GitHub_Actions/src -m pytest LW3_Continuous_Integration_(CI)_GitHub_Actions/tests
+        # Используем кавычки вокруг имени папки!
+        export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/"LW3_Continuous_Integration_(CI)_GitHub_Actions"
+        # --source и pytest также требуют кавычек
+        coverage run --source="LW3_Continuous_Integration_(CI)_GitHub_Actions"/src -m pytest "LW3_Continuous_Integration_(CI)_GitHub_Actions"/tests
         coverage report -m
 
     # 7. Проверка безопасности кода (ИСПРАВЛЕНИЕ ПУТИ)
     - name: Security check
-      run: bandit -r LW3_Continuous_Integration_(CI)_GitHub_Actions/src -c .bandit
+      run: bandit -r "LW3_Continuous_Integration_(CI)_GitHub_Actions"/src -c .bandit
 
     # 8. Отправка уведомления в Telegram
     - name: Notify via Telegram

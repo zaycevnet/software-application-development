@@ -47,9 +47,9 @@ jobs:
         coverage run --source="LW3_Continuous_Integration_(CI)_GitHub_Actions"/src -m pytest "LW3_Continuous_Integration_(CI)_GitHub_Actions"/tests
         coverage report -m
 
-    # 7. Проверка безопасности кода (ИСПРАВЛЕНИЕ ПУТИ)
+    # 7. Проверка безопасности кода (УДАЛЯЕМ ФЛАГ КОНФИГУРАЦИИ)
     - name: Security check
-      run: bandit -r "LW3_Continuous_Integration_(CI)_GitHub_Actions"/src -c .bandit
+      run: bandit -r "LW3_Continuous_Integration_(CI)_GitHub_Actions"/src
 
     # 8. Отправка уведомления в Telegram
     - name: Notify via Telegram

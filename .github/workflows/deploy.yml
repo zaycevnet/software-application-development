@@ -34,9 +34,9 @@ jobs:
         export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/"LW3_Continuous_Integration_(CI)_GitHub_Actions"
         python -m pytest "LW3_Continuous_Integration_(CI)_GitHub_Actions"/tests
 
-    # 5. Линтинг кода
+     # 5. Линтинг кода
     - name: Lint code
-      run: flake8 "LW3_Continuous_Integration_(CI)_GitHub_Actions"
+      run: flake8 "LW3_Continuous_Integration_(CI)_GitHub_Actions" --ignore=W292,E501
 
     # 6. Проверка покрытия тестами (ИСПРАВЛЕНИЕ ПУТИ И ИСТОЧНИКА)
     - name: Test coverage

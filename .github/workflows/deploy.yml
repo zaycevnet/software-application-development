@@ -1,66 +1,70 @@
 name: CI/CD Pipeline - LW3
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-  workflow_dispatch:
+on:  # Ключевое слово: Определяет, когда запускать этот рабочий процесс
+  push:  # Запуск при событии 'push' (загрузке)
+    branches:  # Только для указанных веток
+      - main  # Запускать, когда изменения загружены в ветку 'main'
+  pull_request:  # Запуск, когда кто-то создает или обновляет Pull Request
+  workflow_dispatch:  # Позволяет запускать пайплайн вручную (кнопкой на GitHub)
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+jobs:  #Определяет набор задач, которые нужно выполнить
+  build: # Имя задачи
+    runs-on: ubuntu-latest  # Определяет, на какой ОС запускать задачу (здесь - последняя версия Ubuntu)
 
-    steps:
+    steps: # Определяет последовательность шагов, которые нужно выполнить в этой задаче
     # 1. Клонируем репозиторий
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: Checkout repository 
+      uses: actions/checkout@v3 # Использует готовое действие для клонирования репозитория
 
     # 2. Настройка Python
     - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      uses: actions/setup-python@v4   # Использует готовое действие для установки Python
+      with: # Параметры для действия
+        python-version: '3.11' 
 
     # 3. Установка зависимостей
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
+      run: |  # Многострочная команда, Обновляем менеджер пакетов pip и устанавливаем необходимые библиотеки
+        python -m pip install --upgrade pip   
         pip install pytest flake8 coverage bandit requests
 
     # 4. Запуск тестов
-    - name: Run tests
-      run: |
+    - name: Run tests # Добавляем путь к папке с кодом в PYTHONPATH, чтобы Python нашел модуль 'src'
+    # Запускаем pytest для всех файлов в папке 'tests'
+      run: | # Многострочная команда, Запускаем тесты с помощью pytest (ИСПРАВЛЕНИЕ ПУТИ), 
         export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/"LW3_Continuous_Integration_(CI)_GitHub_Actions"
         python -m pytest "LW3_Continuous_Integration_(CI)_GitHub_Actions"/tests
 
      # 5. Линтинг кода
     - name: Lint code
       run: flake8 "LW3_Continuous_Integration_(CI)_GitHub_Actions" --ignore=W292,E501
+      # Запускаем flake8 для проверки стиля PEP 8 в нашей папке
+      # --ignore=W292,E501: Игнорируем специфические ошибки (символ конца файла, длинные строки)
 
     # 6. Проверка покрытия тестами (ИСПРАВЛЕНИЕ ПУТИ И ИСТОЧНИКА)
     - name: Test coverage
       run: |
-        # Используем кавычки вокруг имени папки!
+        # Снова устанавливаем PYTHONPATH для корректной работы 'coverage'
         export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/"LW3_Continuous_Integration_(CI)_GitHub_Actions"
         # --source и pytest также требуют кавычек
         coverage run --source="LW3_Continuous_Integration_(CI)_GitHub_Actions"/src -m pytest "LW3_Continuous_Integration_(CI)_GitHub_Actions"/tests
-        coverage report -m
+        coverage report -m # Выводим отчет о покрытии тестами в консоль
 
     # 7. Проверка безопасности кода (УДАЛЯЕМ ФЛАГ КОНФИГУРАЦИИ)
     - name: Security check
       run: bandit -r "LW3_Continuous_Integration_(CI)_GitHub_Actions"/src
+      # Запускаем Bandit рекурсивно (-r) для сканирования папки 'src' на уязвимости
 
     # 8. Отправка уведомления в Telegram
     - name: Notify via Telegram
-      if: always()
+      if: always() # Этот шаг выполняется всегда, даже если предыдущие шаги не удались
       run: |
-        if [ "${{ job.status }}" == "success" ]; then
+        if [ "${{ job.status }}" == "success" ]; then # Проверяем статус задачи (успех или ошибка)
           export PIPELINE_STATUS="success"
         else
-          export PIPELINE_STATUS="failure"
-        fi
-        python .github/workflows/telegram_notify.py
-      env:
+          export PIPELINE_STATUS="failure" 
+        fi 
+        python .github/workflows/telegram_notify.py # Запускаем скрипт для отправки уведомления в Telegram
+      env:  # Передаем секреты в скрипт через переменные окружения
         TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

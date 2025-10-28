@@ -1,0 +1,32 @@
+name: GitHub Pages Deployment
+
+on:
+  push:
+    branches:
+      - main  # Запуск деплоя при пуше в ветку main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Выбираем операционную систему (Ubuntu)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2  # Клонируем репозиторий
+
+      - name: Set up Node.js (если проект использует Node.js)
+        uses: actions/setup-node@v2  # Настроим Node.js (если требуется)
+        with:
+          node-version: '14'  # Указание нужной версии Node.js
+
+      - name: Install dependencies (если есть)
+        run: npm install  # Устанавливаем зависимости, если они нужны
+
+      - name: Build project (если нужно)
+        run: npm run build  # Сборка проекта (если требуется)
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3  # Используем действие для деплоя на GitHub Pages
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Используем стандартный токен GitHub
+          publish_branch: gh-pages  # Ветка для деплоя (gh-pages)
+          publish_dir: build  # Папка, которую нужно выгрузить (например: build или public)

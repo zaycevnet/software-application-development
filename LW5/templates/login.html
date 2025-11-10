@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Вход</h2>
+        <form method="POST">
+            <input type="email" name="email" placeholder="Email" required><br>
+            <input type="password" name="password" placeholder="Пароль" required><br>
+            <button type="submit">Войти</button>
+        </form>
+        <p>Нет аккаунта? <a href="{{ url_for('signup') }}">Регистрация</a></p>
+        {% for message in get_flashed_messages() %}
+            <p class="error">{{ message }}</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

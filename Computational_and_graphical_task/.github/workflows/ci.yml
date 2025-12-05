@@ -38,6 +38,8 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
           echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "MY_BOT_TOKEN=${{ secrets.MY_BOT_TOKEN }}" >> $GITHUB_ENV
+          echo "MY_BOT_CHAT_ID=${{ secrets.MY_BOT_CHAT_ID }}" >> $GITHUB_ENV
 
       # 5. Запуск тестов
       - name: Run tests
